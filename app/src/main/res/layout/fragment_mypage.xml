@@ -1,8 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mypage_fragment_layout"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/green"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/idEditTextView"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/shape_edit_text"
+        android:maxLines="1"
+        android:maxLength="20"
+        android:hint="@string/hint_id"
+        android:paddingStart="10dp"
+        />
+
+    <EditText
+        android:id="@+id/pwEditTextView"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/idEditTextView"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/shape_edit_text"
+        android:maxLines="1"
+        android:maxLength="20"
+        android:hint="@string/hint_password"
+        android:paddingStart="10dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/signUpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/pwEditTextView"
+        app:layout_constraintEnd_toStartOf="@id/loginButton"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/signUp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/pwEditTextView"
+        app:layout_constraintTop_toBottomOf="@id/pwEditTextView"
+        android:layout_marginTop="15dp"
+        android:text="@string/login"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
