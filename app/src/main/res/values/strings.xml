@@ -5,6 +5,7 @@
     <string name="mypage">마이페이지</string>
     <string name="signUp">회원가입</string>
     <string name="login">로그인</string>
-    <string name="hint_password">패스워드를 입력해주세요.</string>
-    <string name="hint_id">아이디를 입력해주세요.</string>
+    <string name="hint_password">패스워드</string>
+    <string name="hint_id">아이디</string>
+    <string name="title_of_mypage">마이페이지</string>
 </resources>
