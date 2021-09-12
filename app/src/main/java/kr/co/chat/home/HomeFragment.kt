@@ -1,7 +1,11 @@
 package kr.co.chat.home
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
+
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
@@ -17,12 +21,17 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     private lateinit var locationSource: FusedLocationSource
 
+    /** 카메라 위치 저장하기 위한 preference */
+    private var sharedPreferences: SharedPreferences ?= null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
+
         binding.mapView.onCreate(savedInstanceState)
 
         binding.mapView.getMapAsync(this)
+
 
     }
 
@@ -42,8 +51,24 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
         naverMap.locationSource = locationSource
 
-        val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.497933, 127.027558))
-        naverMap.moveCamera(cameraUpdate)
+        /** 화면 전환 전에 보고 있던 cameraPosition 이 존재한다면 */
+        if(sharedPreferences != null) {
+            /** 위도 , 경도 , 줌 가져오기 */
+            val cameraPosition = CameraPosition(LatLng(sharedPreferences?.getString("latitude" , "")!!.toDouble() ,
+                sharedPreferences?.getString("longitude" ,"")!!.toDouble()),
+                sharedPreferences?.getString("zoom" ,"")!!.toDouble()
+            )
+            /** 다시 재배치 */
+            naverMap.cameraPosition = cameraPosition
+
+        }
+        /** 처음 화면을 보는 거라면 */
+        else {
+
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.497933, 127.027558))
+            naverMap.moveCamera(cameraUpdate)
+        }
+
 
     }
 
@@ -88,6 +113,18 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     override fun onPause() {
         super.onPause()
         binding.mapView.onPause()
+
+        /** fragment 화면전환 시 보고 있던 cameraPosition  sharedPreference에 저장 */
+        context?.let {
+
+            sharedPreferences = it.getSharedPreferences("camera_position" , Context.MODE_PRIVATE)
+            sharedPreferences?.edit(true) {
+                putString("latitude" , naverMap.cameraPosition.target.latitude.toString())
+                putString("longitude" , naverMap.cameraPosition.target.longitude.toString())
+                putString("zoom" , naverMap.cameraPosition.zoom.toString())
+            }
+        }
+
     }
 
     override fun onLowMemory() {
