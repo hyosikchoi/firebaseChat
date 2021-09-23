@@ -8,6 +8,7 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="90dp"
         />
 
     <com.naver.maps.map.widget.LocationButtonView
@@ -19,7 +20,8 @@
         android:layout_marginStart="10dp"
         />
 
-
+    <include
+        layout="@layout/item_bottom_sheet"/>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
