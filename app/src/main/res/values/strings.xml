@@ -8,4 +8,5 @@
     <string name="hint_password">패스워드</string>
     <string name="hint_id">아이디</string>
     <string name="title_of_mypage">마이페이지</string>
+    <string name="recommend_place">추천 장소</string>
 </resources>
