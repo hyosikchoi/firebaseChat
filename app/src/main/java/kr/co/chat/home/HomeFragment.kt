@@ -1,17 +1,24 @@
 package kr.co.chat.home
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
 import kr.co.chat.R
 import kr.co.chat.databinding.FragmentHomeBinding
+import kr.co.chat.home.detail.ItemInsertActivity
 
 class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
@@ -69,9 +76,49 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
             naverMap.moveCamera(cameraUpdate)
         }
 
+        /** 지도 클릭 이벤트 관련 */
+        mapOnClick()
+
 
     }
 
+
+    private fun mapOnClick() {
+        /** 지도 클릭 시 */
+        naverMap.setOnMapClickListener { pointF, latLng ->
+
+            //Toast.makeText(context , "위도 : ${latLng.latitude} , 경도 : ${latLng.longitude}" , Toast.LENGTH_SHORT).show()
+
+            /** 물품 등록 창으로 이동 */
+            val intent = Intent(requireActivity(), ItemInsertActivity::class.java)
+            intent.putExtra(ItemInsertActivity.LATITUDE , latLng.latitude)
+            intent.putExtra(ItemInsertActivity.LONGITUDE , latLng.longitude)
+            startActivity(intent)
+            requireActivity()?.let {
+                it.overridePendingTransition(R.anim.slide_in_right , R.anim.slide_out_left)
+            }
+
+
+            // todo 마커 생성
+//            val marker = Marker()
+//            marker.position = LatLng(latLng.latitude, latLng.longitude)
+//            marker.iconTintColor = Color.RED
+//
+//            /** 마커 클릭 시 */
+//            marker.setOnClickListener(object : Overlay.OnClickListener {
+//                override fun onClick(overlay: Overlay): Boolean {
+//
+//
+//
+//                    return true
+//                }
+//            })
+//
+//            marker.map = naverMap
+
+        }
+
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
