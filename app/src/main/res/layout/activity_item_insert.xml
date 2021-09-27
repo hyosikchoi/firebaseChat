@@ -67,7 +67,7 @@
         >
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/pwEditTextView"
+            android:id="@+id/priceEditTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
@@ -110,6 +110,18 @@
         android:backgroundTint="@color/yellow"
         android:text="상품 등록하기"
         android:textColor="@color/white"
+        />
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="?android:attr/progressBarStyleLarge"
+        android:visibility="gone"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
