@@ -3,22 +3,25 @@ package kr.co.chat.home
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
-import com.naver.maps.map.overlay.InfoWindow
-import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import kr.co.chat.DBKey
 import kr.co.chat.R
 import kr.co.chat.databinding.FragmentHomeBinding
+import kr.co.chat.home.adapter.ViewPagerAdapter
 import kr.co.chat.home.detail.ItemInsertActivity
+import kr.co.chat.home.entity.ItemEntity
 
 class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
@@ -31,6 +34,43 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     /** 카메라 위치 저장하기 위한 preference */
     private var sharedPreferences: SharedPreferences ?= null
 
+    private val auth: FirebaseAuth by lazy {
+        Firebase.auth
+    }
+
+    private val firebaseDB: DatabaseReference by lazy {
+        Firebase.database.reference
+    }
+
+    private val itemsDB: DatabaseReference by lazy {
+        Firebase.database.reference.child(DBKey.ITEMS)
+    }
+
+    private val viewPagerAdapter = ViewPagerAdapter()
+
+    /** fragment 전환 시 생명주기 때문에 listener 를 최상단에 정의 */
+    /** lifecycle 에 맞춰 add 했다가 remove 하기 위해서 */
+    private val itemListener = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+
+            val itemList = mutableListOf<ItemEntity>()
+
+            snapshot.children.forEach { data ->
+                val itemEntity = data.getValue(ItemEntity::class.java)
+                itemEntity ?: return
+                itemList.add(itemEntity)
+            }
+            /** 현재 데이터 목록에 추가된 데이터가 있으면  */
+            if(!viewPagerAdapter.currentList.containsAll(itemList)) {
+                /** list 삽입 */
+                viewPagerAdapter.submitList(itemList)
+            }
+
+        }
+
+        override fun onCancelled(error: DatabaseError) {}
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
@@ -39,7 +79,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
         binding.mapView.getMapAsync(this)
 
-
+        binding.itemViewPager.adapter = viewPagerAdapter
     }
 
     override fun onMapReady(map : NaverMap) {
@@ -78,6 +118,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
         /** 지도 클릭 이벤트 관련 */
         mapOnClick()
+
 
 
     }
@@ -119,7 +160,6 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
         }
 
     }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -150,6 +190,9 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
+
+        /** 상품 목록 불러오기 */
+        itemsDB.addListenerForSingleValueEvent(itemListener)
     }
 
     override fun onStop() {
@@ -160,6 +203,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     override fun onPause() {
         super.onPause()
         binding.mapView.onPause()
+
+        itemsDB.removeEventListener(itemListener)
 
         /** fragment 화면전환 시 보고 있던 cameraPosition  sharedPreference에 저장 */
         context?.let {
@@ -187,6 +232,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.mapView.onDestroy()
+
+        itemsDB.removeEventListener(itemListener)
     }
 
     companion object {

@@ -12,4 +12,5 @@
     <string name="item_insert_toolbar_title">상품 등록</string>
     <string name="hint_item_title">상품 이름</string>
     <string name="hint_price">가격</string>
+    <string name="storage_path">items/photo</string>
 </resources>

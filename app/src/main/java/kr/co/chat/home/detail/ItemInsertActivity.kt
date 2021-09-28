@@ -45,6 +45,10 @@ class ItemInsertActivity : AppCompatActivity() {
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
+    private var latitude : Double  = 37.0
+
+    private var longitude : Double = 37.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityItemInsertBinding.inflate(layoutInflater)
@@ -82,10 +86,13 @@ class ItemInsertActivity : AppCompatActivity() {
         }
 
         if (intent.hasExtra(LATITUDE) && intent.hasExtra(LONGITUDE)) {
-            Toast.makeText(
-                this, "latitude : ${intent.getDoubleExtra(LATITUDE, 37.0)}" +
-                        ",longitude : ${intent.getDoubleExtra(LONGITUDE, 37.0)}", Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(
+//                this, "latitude : ${intent.getDoubleExtra(LATITUDE, 37.0)}" +
+//                        ",longitude : ${intent.getDoubleExtra(LONGITUDE, 37.0)}", Toast.LENGTH_SHORT
+//            ).show()
+
+            latitude = intent.getDoubleExtra(LATITUDE, 37.0)
+            longitude =  intent.getDoubleExtra(LONGITUDE, 37.0)
         }
 
     }
@@ -180,14 +187,14 @@ class ItemInsertActivity : AppCompatActivity() {
     ) {
         val fileName = "${price}_${System.currentTimeMillis()}.png"
 
-        storage.reference.child("items/photo").child(fileName)
+        storage.reference.child(getString(R.string.storage_path)).child(fileName)
             .putFile(photoUri)
             .addOnCompleteListener { task ->
                 /** 업로드 완료 시 */
                 if (task.isSuccessful) {
 
                     /** download url 를 가져온다. */
-                    storage.reference.child("items/photo").child(fileName).downloadUrl
+                    storage.reference.child(getString(R.string.storage_path)).child(fileName).downloadUrl
                         .addOnSuccessListener { downloadUrl ->
                             successUpload(downloadUrl.toString())
                         }
@@ -212,7 +219,9 @@ class ItemInsertActivity : AppCompatActivity() {
             imageUrl = downLoadUrl,
             price = price,
             title = title,
-            createdAt = System.currentTimeMillis()
+            createdAt = System.currentTimeMillis(),
+            latitude = latitude,
+            longitude = longitude
         )
 
         /** realtime db 에 업데이트 */
