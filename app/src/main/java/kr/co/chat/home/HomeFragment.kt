@@ -3,6 +3,7 @@ package kr.co.chat.home
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 
@@ -15,6 +16,8 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
 import kr.co.chat.DBKey
 import kr.co.chat.R
@@ -36,10 +39,6 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     private val auth: FirebaseAuth by lazy {
         Firebase.auth
-    }
-
-    private val firebaseDB: DatabaseReference by lazy {
-        Firebase.database.reference
     }
 
     private val itemsDB: DatabaseReference by lazy {
@@ -64,6 +63,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
             if(!viewPagerAdapter.currentList.containsAll(itemList)) {
                 /** list 삽입 */
                 viewPagerAdapter.submitList(itemList)
+                updateMarker(itemList = itemList)
             }
 
         }
@@ -160,6 +160,28 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
         }
 
     }
+
+    private fun updateMarker(itemList : MutableList<ItemEntity>) {
+
+        itemList.forEach { item ->
+            val marker = Marker()
+            marker.position = LatLng(item.latitude , item.longitude)
+            marker.iconTintColor = Color.RED
+
+            /** 마커 클릭 시 */
+            marker.setOnClickListener(object : Overlay.OnClickListener {
+                override fun onClick(overlay: Overlay): Boolean {
+
+
+                    return true
+                }
+            })
+
+            marker.map = naverMap
+        }
+
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
