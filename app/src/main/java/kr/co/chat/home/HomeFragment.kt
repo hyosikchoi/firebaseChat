@@ -9,6 +9,7 @@ import android.view.View
 
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -66,6 +67,10 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
                 updateMarker(itemList = itemList)
             }
 
+            else {
+                updateMarker(itemList = itemList)
+            }
+
         }
 
         override fun onCancelled(error: DatabaseError) {}
@@ -80,6 +85,21 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
         binding.mapView.getMapAsync(this)
 
         binding.itemViewPager.adapter = viewPagerAdapter
+
+        binding.itemViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+
+                /** 해당 item 가져온다. */
+                val itemEntity = viewPagerAdapter.currentList[position]
+
+                val cameraUpdate =  CameraUpdate.scrollTo(LatLng(itemEntity.latitude,itemEntity.longitude)).animate(CameraAnimation.Easing)
+                naverMap.moveCamera(cameraUpdate)
+            }
+
+        })
+
     }
 
     override fun onMapReady(map : NaverMap) {
