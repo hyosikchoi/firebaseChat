@@ -1,6 +1,7 @@
 package kr.co.chat.home.entity
 
 data class ItemEntity(
+    val id : String,
     val sellerId : String,
     val imageUrl : String,
     val price : String,
@@ -9,5 +10,5 @@ data class ItemEntity(
     val latitude : Double,
     val longitude : Double
 ) {
-    constructor() : this("" , "" , "" , "" , 0 , 0.0 , 0.0)
+    constructor() : this("", "" , "" , "" , "" , 0 , 0.0 , 0.0)
 }

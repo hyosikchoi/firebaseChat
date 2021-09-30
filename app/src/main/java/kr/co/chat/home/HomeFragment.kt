@@ -20,6 +20,7 @@ import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import kr.co.chat.DBKey
 import kr.co.chat.R
 import kr.co.chat.databinding.FragmentHomeBinding
@@ -139,8 +140,6 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
         /** 지도 클릭 이벤트 관련 */
         mapOnClick()
 
-
-
     }
 
 
@@ -158,41 +157,27 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
             requireActivity()?.let {
                 it.overridePendingTransition(R.anim.slide_in_right , R.anim.slide_out_left)
             }
-
-
-            // todo 마커 생성
-//            val marker = Marker()
-//            marker.position = LatLng(latLng.latitude, latLng.longitude)
-//            marker.iconTintColor = Color.RED
-//
-//            /** 마커 클릭 시 */
-//            marker.setOnClickListener(object : Overlay.OnClickListener {
-//                override fun onClick(overlay: Overlay): Boolean {
-//
-//
-//
-//                    return true
-//                }
-//            })
-//
-//            marker.map = naverMap
-
         }
 
     }
 
-    private fun updateMarker(itemList : MutableList<ItemEntity>) {
+    private fun updateMarker(itemList : MutableList<ItemEntity>)  = with(binding) {
 
         itemList.forEach { item ->
             val marker = Marker()
             marker.position = LatLng(item.latitude , item.longitude)
+            marker.icon = MarkerIcons.BLACK
             marker.iconTintColor = Color.RED
+
+            /** 마커 식별 태그 지정 */
+            marker.tag = item.id
 
             /** 마커 클릭 시 */
             marker.setOnClickListener(object : Overlay.OnClickListener {
                 override fun onClick(overlay: Overlay): Boolean {
-
-
+                    /** 해당 item 으로 viewPager 이동 */
+                    val itemPosition = viewPagerAdapter.currentList.indexOf(item)
+                    itemViewPager.currentItem = itemPosition
                     return true
                 }
             })

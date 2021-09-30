@@ -214,7 +214,11 @@ class ItemInsertActivity : AppCompatActivity() {
 
     /** 최종 db 에 entity insert */
     private fun uploadItem(sellerId : String , title : String , price : String , downLoadUrl: String ) {
+        /** realtime db 에서 autoIncrement 를 제공하지 않으므로  */
+        /** unique 한 id 값을 sellerId+ 현재 시간으로 한다. */
+        /** 한 판매자는 동시에 하나의 아이템밖에 등록 못하므로 시간을 더하면 unique 해진다. */
         val itemEntity = ItemEntity(
+            id = "${sellerId}${System.currentTimeMillis()}",
             sellerId = sellerId,
             imageUrl = downLoadUrl,
             price = price,

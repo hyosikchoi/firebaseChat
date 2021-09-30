@@ -22,7 +22,7 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/itemViewPager"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="140dp"

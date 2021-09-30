@@ -1,7 +1,9 @@
 package kr.co.chat.home.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +29,7 @@ class ViewPagerAdapter : ListAdapter<ItemEntity,ViewPagerAdapter.ItemViewHolder>
 
     inner class ItemViewHolder(private val binding : ItemViewpagerViewholderBinding) : RecyclerView.ViewHolder(binding.root) {
 
+        @SuppressLint("SetTextI18n")
         fun bind(itemEntity: ItemEntity) = with(binding) {
             titleTextView.text = itemEntity.title
             priceTextView.text = "${DecimalFormat("###,###").format(itemEntity.price.toLong())} 원"
@@ -40,7 +43,7 @@ class ViewPagerAdapter : ListAdapter<ItemEntity,ViewPagerAdapter.ItemViewHolder>
         val diffUtil = object : DiffUtil.ItemCallback<ItemEntity>() {
 
             override fun areItemsTheSame(oldItem: ItemEntity, newItem: ItemEntity): Boolean {
-                    return oldItem == newItem
+                    return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(oldItem: ItemEntity, newItem: ItemEntity): Boolean {
