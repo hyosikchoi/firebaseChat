@@ -4,7 +4,9 @@ data class ChatRoomItem(
     val key : String,
     val title : String,
     val buyerId : String,
-    val sellerId : String
+    val sellerId : String,
+    val buyerEmail : String,
+    val sellerEmail : String
 ) {
-    constructor() : this("" , "" , "" , "")
+    constructor() : this("" , "" , "" , "" , "" , "")
 }

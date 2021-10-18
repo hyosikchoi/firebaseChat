@@ -11,6 +11,7 @@ import android.view.View
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -63,7 +64,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
                     AlertDialog.Builder(it)
                         .setTitle("채팅방을 개설 하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            it.toast("채팅방 개설")
+                            createChatRoom(itemEntity)
                         }
                         .setNegativeButton("취소") { _, _ -> }
                         .create()
@@ -229,6 +230,20 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
                naverMap.locationTrackingMode = LocationTrackingMode.None
            }
 
+        }
+
+    }
+
+    private fun createChatRoom(itemEntity : ItemEntity) = with(binding) {
+
+        if(auth.currentUser?.uid == itemEntity.sellerId) {
+            context?.let {
+                it.toast("자신이 등록한 아이템입니다.")
+            }
+        }
+
+        else {
+            // Todo 채팅방 개설
         }
 
     }

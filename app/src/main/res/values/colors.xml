@@ -10,4 +10,5 @@
     <color name="yellow">#F8DF05</color>
     <color name="black">#000000</color>
     <color name="gray">#cccccc</color>
+    <color name="darkGray">#AAAAAA</color>
 </resources>
