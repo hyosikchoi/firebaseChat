@@ -15,6 +15,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kr.co.chat.DBKey.Companion.USERS
 import kr.co.chat.R
+
 import kr.co.chat.databinding.FragmentMypageBinding
 
 class MyPageFragment : Fragment(R.layout.fragment_mypage) {
@@ -72,59 +73,59 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
 
     }
 
-    private fun setLoginState() {
+    private fun setLoginState() = with(binding) {
 
-        binding.loginButton.text = "로그아웃"
-        binding.idEditTextView.text?.clear()
-        binding.pwEditTextView.text?.clear()
-        binding.idEditTextView.isEnabled = false
-        binding.pwEditTextView.isEnabled = false
-        binding.signUpButton.isEnabled = false
-        binding.loginButton.isEnabled = true
+        loginButton.text = "로그아웃"
+        idEditTextView.text?.clear()
+        pwEditTextView.text?.clear()
+        idEditTextView.isEnabled = false
+        pwEditTextView.isEnabled = false
+        signUpButton.isEnabled = false
+        loginButton.isEnabled = true
 
     }
 
-    private fun initIdPwEditText() {
+    private fun initIdPwEditText() = with(binding) {
 
         /** 처음에 id , password 공백이므로 버튼 비활성화 */
-        binding.signUpButton.isEnabled = false
-        binding.loginButton.isEnabled = false
+        signUpButton.isEnabled = false
+        loginButton.isEnabled = false
 
         /** id edittext 글자수 세기 가능여부 */
-        binding.idIntputLayout.isCounterEnabled = true
+        idIntputLayout.isCounterEnabled = true
         /** id edittext 글자수 맥시멈 */
-        binding.idIntputLayout.counterMaxLength = 20
+        idIntputLayout.counterMaxLength = 20
         /** pw edittext 글자수 세기 가능여부 */
-        binding.pwInputLayout.isCounterEnabled = true
+        pwInputLayout.isCounterEnabled = true
         /** pw edittext 글자수 맥시멈 */
-        binding.pwInputLayout.counterMaxLength = 20
+        pwInputLayout.counterMaxLength = 20
         /** inputType = textPassword 보였다가 안보였다가 기능(눈알모양) */
-        binding.pwInputLayout.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+        pwInputLayout.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
 
-        binding.idEditTextView.addTextChangedListener {
+        idEditTextView.addTextChangedListener {
             if(auth.currentUser == null) {
-                val enable = binding.idEditTextView.text.isNullOrEmpty() or binding.pwEditTextView.text.isNullOrEmpty()
-                binding.signUpButton.isEnabled = !enable
-                binding.loginButton.isEnabled = !enable
+                val enable = idEditTextView.text.isNullOrEmpty() or pwEditTextView.text.isNullOrEmpty()
+                signUpButton.isEnabled = !enable
+                loginButton.isEnabled = !enable
             }
         }
 
-        binding.pwEditTextView.addTextChangedListener {
+        pwEditTextView.addTextChangedListener {
             if(auth.currentUser == null) {
-                val enable = binding.idEditTextView.text.isNullOrEmpty() or binding.pwEditTextView.text.isNullOrEmpty()
-                binding.signUpButton.isEnabled = !enable
-                binding.loginButton.isEnabled = !enable
+                val enable = idEditTextView.text.isNullOrEmpty() or pwEditTextView.text.isNullOrEmpty()
+                signUpButton.isEnabled = !enable
+                loginButton.isEnabled = !enable
 
             }
         }
 
     }
 
-    private fun initSignUp() {
-        binding.signUpButton.setOnClickListener {
+    private fun initSignUp() = with(binding) {
+        signUpButton.setOnClickListener {
 
-            val id = binding.idEditTextView.text.toString()
-            val password = binding.pwEditTextView.text.toString()
+            val id = idEditTextView.text.toString()
+            val password = pwEditTextView.text.toString()
 
             auth.createUserWithEmailAndPassword(id,password).addOnCompleteListener(requireActivity()) { task ->
 
@@ -146,15 +147,15 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
 
     }
 
-    private fun initLogin() {
+    private fun initLogin() = with(binding) {
 
-        binding.loginButton.setOnClickListener {
+        loginButton.setOnClickListener {
 
             /** 로그인 상태가 아니라면 */
             if(auth.currentUser == null) {
 
-                val id = binding.idEditTextView.text.toString()
-                val password = binding.pwEditTextView.text.toString()
+                val id = idEditTextView.text.toString()
+                val password = pwEditTextView.text.toString()
 
                 auth.signInWithEmailAndPassword(id,password).addOnCompleteListener(requireActivity()) { task ->
 
@@ -178,10 +179,10 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
             /** 로그인 상태라면 */
             else {
                 auth.signOut()
-                binding.loginButton.text = "로그인"
-                binding.idEditTextView.isEnabled = true
-                binding.pwEditTextView.isEnabled = true
-                binding.signUpButton.isEnabled = true
+                loginButton.text = "로그인"
+                idEditTextView.isEnabled = true
+                pwEditTextView.isEnabled = true
+                signUpButton.isEnabled = true
                 Toast.makeText(context , "로그아웃 하였습니다.", Toast.LENGTH_LONG).show()
 
             }

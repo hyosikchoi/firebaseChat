@@ -1,5 +1,6 @@
 package kr.co.chat.home
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -24,6 +25,8 @@ import com.naver.maps.map.util.MarkerIcons
 import kr.co.chat.DBKey
 import kr.co.chat.R
 import kr.co.chat.databinding.FragmentHomeBinding
+
+import kr.co.chat.extension.toast
 import kr.co.chat.home.adapter.ViewPagerAdapter
 import kr.co.chat.home.detail.ItemInsertActivity
 import kr.co.chat.home.entity.ItemEntity
@@ -47,7 +50,28 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
         Firebase.database.reference.child(DBKey.ITEMS)
     }
 
-    private val viewPagerAdapter = ViewPagerAdapter()
+    private val viewPagerAdapter = ViewPagerAdapter(
+        /** viewPager item 클릭 시 채팅방 개설 */
+        itemClicked = { itemEntity ->
+            if(auth.currentUser == null) {
+                context?.let {
+                    it.toast("로그인 후 이용해주세요.")
+                }
+            }
+            else {
+                context?.let {
+                    AlertDialog.Builder(it)
+                        .setTitle("채팅방을 개설 하시겠습니까?")
+                        .setPositiveButton("확인") { _, _ ->
+                            it.toast("채팅방 개설")
+                        }
+                        .setNegativeButton("취소") { _, _ -> }
+                        .create()
+                        .show()
+                }
+            }
+        }
+    )
 
     /** fragment 전환 시 생명주기 때문에 listener 를 최상단에 정의 */
     /** lifecycle 에 맞춰 add 했다가 remove 하기 위해서 */

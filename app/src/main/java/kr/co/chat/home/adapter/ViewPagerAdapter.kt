@@ -13,7 +13,7 @@ import kr.co.chat.databinding.ItemViewpagerViewholderBinding
 import kr.co.chat.home.entity.ItemEntity
 import java.text.DecimalFormat
 
-class ViewPagerAdapter : ListAdapter<ItemEntity,ViewPagerAdapter.ItemViewHolder>(diffUtil) {
+class ViewPagerAdapter(val itemClicked : (ItemEntity) -> Unit) : ListAdapter<ItemEntity,ViewPagerAdapter.ItemViewHolder>(diffUtil) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -34,6 +34,9 @@ class ViewPagerAdapter : ListAdapter<ItemEntity,ViewPagerAdapter.ItemViewHolder>
             titleTextView.text = itemEntity.title
             priceTextView.text = "${DecimalFormat("###,###").format(itemEntity.price.toLong())} 원"
             Glide.with(thumbnailImageView.context).load(itemEntity.imageUrl).into(thumbnailImageView)
+
+            root.setOnClickListener { itemClicked(itemEntity) }
+
         }
     }
 
