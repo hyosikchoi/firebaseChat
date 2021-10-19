@@ -30,6 +30,7 @@ import kr.co.chat.databinding.FragmentHomeBinding
 import kr.co.chat.extension.toast
 import kr.co.chat.home.adapter.ViewPagerAdapter
 import kr.co.chat.home.detail.ItemInsertActivity
+import kr.co.chat.home.entity.ChatRoomItem
 import kr.co.chat.home.entity.ItemEntity
 
 class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
@@ -45,6 +46,10 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     private val auth: FirebaseAuth by lazy {
         Firebase.auth
+    }
+
+    private val userDB : DatabaseReference by lazy {
+        Firebase.database.reference.child(DBKey.USERS)
     }
 
     private val itemsDB: DatabaseReference by lazy {
@@ -243,7 +248,32 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
         }
 
         else {
-            // Todo 채팅방 개설
+                auth.currentUser?.let { user ->
+                    /** 채팅방 개설 */
+                    val chatRoom = ChatRoomItem(
+                        key = "${user.uid}${itemEntity.sellerId}${System.currentTimeMillis()}",
+                        title = itemEntity.title,
+                        user.uid,
+                        itemEntity.sellerId,
+                        user.email as String,
+                        itemEntity.sellerEmail,
+                        )
+
+                    /** buyer , seller 밑에 child 로 채팅방 생성 */
+                    userDB.child(user.uid)
+                        .child(DBKey.CHAT)
+                        .push()
+                        .setValue(chatRoom)
+
+                    userDB.child(itemEntity.sellerId)
+                        .child(DBKey.CHAT)
+                        .push()
+                        .setValue(chatRoom)
+
+                    Snackbar.make(this@HomeFragment.view as View , "채팅방이 생성되었습니다. 채팅탭에서 확인해주세요." , Snackbar.LENGTH_LONG).show()
+
+                }
+
         }
 
     }

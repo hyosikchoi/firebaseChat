@@ -127,20 +127,24 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
             val id = idEditTextView.text.toString()
             val password = pwEditTextView.text.toString()
 
-            auth.createUserWithEmailAndPassword(id,password).addOnCompleteListener(requireActivity()) { task ->
+            activity?.let{
 
-                if(task.isSuccessful) {
-                    context?.let {
-                        Toast.makeText(it , "회원가입에 성공했습니다. 로그인 버튼을 눌러 로그인 해주세요." , Toast.LENGTH_SHORT).show()
+                auth.createUserWithEmailAndPassword(id,password).addOnCompleteListener(requireActivity()) { task ->
+
+                    if(task.isSuccessful) {
+                        context?.let {
+                            Toast.makeText(it , "회원가입에 성공했습니다." , Toast.LENGTH_SHORT).show()
+                            successSignIn()
+                        }
                     }
-                }
 
-                else {
-                    context?.let {
-                        Toast.makeText(it , "이미 가입한 이메일 이거나 , 회원가입에 실패했습니다." , Toast.LENGTH_SHORT).show()
-                   }
-                }
+                    else {
+                        context?.let {
+                            Toast.makeText(it , "이미 가입한 이메일 이거나 , 회원가입에 실패했습니다." , Toast.LENGTH_SHORT).show()
+                        }
+                    }
 
+                }
             }
 
         }

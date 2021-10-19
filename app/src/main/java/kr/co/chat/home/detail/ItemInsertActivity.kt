@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -23,6 +24,7 @@ import kr.co.chat.DBKey
 import kr.co.chat.DBKey.Companion.ITEMS
 import kr.co.chat.R
 import kr.co.chat.databinding.ActivityItemInsertBinding
+import kr.co.chat.extension.toast
 import kr.co.chat.home.entity.ItemEntity
 
 class ItemInsertActivity : AppCompatActivity() {
@@ -133,25 +135,30 @@ class ItemInsertActivity : AppCompatActivity() {
 
         /** 등록하기 버튼 클릭 시 */
         itemAddButton.setOnClickListener {
-            showProgress()
+
             val title = idEditTextView.text.toString().orEmpty()
             val price = priceEditTextView.text.toString().orEmpty()
             val sellerId = auth.currentUser?.uid.orEmpty()
+            val sellerEmail = auth.currentUser?.email.orEmpty()
 
             if (selectedUri != null) {
                 val photoUri = selectedUri ?: return@setOnClickListener
+                showProgress()
                 upload(photoUri = photoUri, price = price,
                     successUpload = { downloadUrl ->
                         /** 최종 db 업로드 */
-                        uploadItem(sellerId , title , price , downloadUrl )
+                        uploadItem(sellerId ,sellerEmail , title , price , downloadUrl )
                     },
                     errorUpload = {
-                        Toast.makeText(this@ItemInsertActivity , "사진 업로드에 실패했습니다." , Toast.LENGTH_SHORT).show()
+                        toast("사진 업로드에 실패했습니다.")
                         hideProgress()
                     }
                 )
             }
-
+            else {
+                // ToDo no Image 처리
+                toast("이미지를 등록하시고 다시 시도해주세요.")
+            }
         }
 
     }
@@ -213,13 +220,14 @@ class ItemInsertActivity : AppCompatActivity() {
     }
 
     /** 최종 db 에 entity insert */
-    private fun uploadItem(sellerId : String , title : String , price : String , downLoadUrl: String ) {
+    private fun uploadItem(sellerId : String , sellerEmail : String , title : String , price : String , downLoadUrl: String ) {
         /** realtime db 에서 autoIncrement 를 제공하지 않으므로  */
         /** unique 한 id 값을 sellerId+ 현재 시간으로 한다. */
         /** 한 판매자는 동시에 하나의 아이템밖에 등록 못하므로 시간을 더하면 unique 해진다. */
         val itemEntity = ItemEntity(
             id = "${sellerId}${System.currentTimeMillis()}",
             sellerId = sellerId,
+            sellerEmail = sellerEmail,
             imageUrl = downLoadUrl,
             price = price,
             title = title,
