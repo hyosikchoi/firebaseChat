@@ -126,7 +126,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
                 val itemEntity = viewPagerAdapter.currentList[position]
 
                 val cameraUpdate =  CameraUpdate.scrollTo(LatLng(itemEntity.latitude,itemEntity.longitude)).animate(CameraAnimation.Easing)
-                naverMap.moveCamera(cameraUpdate)
+                if(this@HomeFragment::naverMap.isInitialized) naverMap.moveCamera(cameraUpdate)
             }
 
         })
@@ -212,7 +212,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
                 }
             })
 
-            marker.map = naverMap
+            if(this@HomeFragment::naverMap.isInitialized) marker.map = naverMap
         }
 
     }

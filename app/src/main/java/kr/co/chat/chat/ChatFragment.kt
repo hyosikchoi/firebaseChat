@@ -3,6 +3,7 @@ package kr.co.chat.chat
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,10 +34,13 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     private var chatListAdapter: ChatListAdapter = ChatListAdapter()
 
+//    private val chatRoomList = mutableListOf<ChatRoomItem>()
+
     /** 채팅방 리스트 listener */
     private val listListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
 
+           // chatRoomList.clear()
             val chatRoomList = mutableListOf<ChatRoomItem>()
 
             snapshot.children.forEach {
@@ -46,11 +50,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
                 chatRoomList.add(chatRoom)
             }
-            Log.d("chat" , "${chatRoomList.size}개")
-            chatListAdapter.submitList(chatRoomList)
-            chatListAdapter.notifyDataSetChanged()
-            Log.d("chat" , "${chatListAdapter.currentList.size}개")
-            initView()
+            /** 완료가 되면 callback 을 받아 다시 initView 처리 */
+            chatListAdapter.submitList(chatRoomList) {
+                initView()
+            }
+
         }
 
         override fun onCancelled(error: DatabaseError) {}
@@ -59,7 +63,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentChatBinding.bind(view)
-
+        initView()
         context?.let {
 
             binding.chatListRecyclerView.layoutManager = LinearLayoutManager(it)
@@ -77,26 +81,26 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     private fun initView() = with(binding) {
 
+
         /** 로그인 하지 않았다면 */
         if (auth.currentUser == null) {
             chatListRecyclerView.isGone = true
             alertTextView.isGone = false
+            alertTextView.text = "로그인후 이용해주세요."
         }
         /** 로그인 했다면 */
         else {
-            chatListRecyclerView.isGone = false
-            alertTextView.isGone = true
-            Log.d("chat" , "${chatListAdapter.currentList.size}개입니다.")
+
             /** 하지만 채팅방이 하나도 없다면 */
-            // Todo adaoter 의 currentList.size (or itemCount) 가 실시간 동기화 안되는 이유 찾기
-//            if (chatListAdapter.currentList.size == 0) {
-//                chatListRecyclerView.isGone = true
-//                alertTextView.isGone = false
-//                alertTextView.text = "현재 채팅방이 없습니다."
-//            } else {
-//                chatListRecyclerView.isGone = false
-//                alertTextView.isGone = true
-//            }
+            if (chatListAdapter.itemCount == 0) {
+                chatListRecyclerView.isGone = true
+                alertTextView.isGone = false
+                alertTextView.text = "현재 채팅방이 없습니다."
+
+            } else {
+                chatListRecyclerView.isGone = false
+                alertTextView.isGone = true
+            }
         }
 
     }
@@ -106,9 +110,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         auth.currentUser?.let { user ->
 
             chatDB.addListenerForSingleValueEvent(listListener)
-            chatListAdapter.notifyDataSetChanged()
         }
 
+        chatListAdapter.notifyDataSetChanged()
     }
 
     override fun onPause() {
