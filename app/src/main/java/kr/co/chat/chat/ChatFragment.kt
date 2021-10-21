@@ -65,6 +65,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         binding = FragmentChatBinding.bind(view)
         initView()
         context?.let {
+            /** 채팅방 목록 item 클릭 시 채팅창 activity 로 이동 */
             chatListAdapter.setClickListener { chatRoomItem ->
                 startActivity(ChatRoomActivity.getIntent(it,chatRoomItem.key))
             }
