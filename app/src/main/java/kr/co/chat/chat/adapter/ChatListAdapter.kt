@@ -1,5 +1,6 @@
 package kr.co.chat.chat.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,6 +12,8 @@ import kr.co.chat.home.entity.ChatRoomItem
 
 class ChatListAdapter : ListAdapter<ChatRoomItem,ChatListAdapter.ChatRoomViewHolder>(diffUtil) {
 
+    private lateinit var chatRoomClick : (ChatRoomItem) -> Unit
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatRoomViewHolder {
 
         return ChatRoomViewHolder(ItemChatListViewholderBinding.inflate(LayoutInflater.from(parent.context) , parent,false))
@@ -21,10 +24,21 @@ class ChatListAdapter : ListAdapter<ChatRoomItem,ChatListAdapter.ChatRoomViewHol
         holder.bind(currentList[position])
     }
 
+    fun setClickListener(chatRoomItemClick : (ChatRoomItem) -> Unit) {
+        chatRoomClick = chatRoomItemClick
+    }
+
+
     inner class ChatRoomViewHolder(val binding: ItemChatListViewholderBinding) : RecyclerView.ViewHolder(binding.root) {
 
+        @SuppressLint("SetTextI18n")
         fun bind(chatRoomItem: ChatRoomItem) = with(binding) {
+
+            roomNumber.text = "${currentList.indexOf(chatRoomItem) + 1}."
             chatRoomTitleTextView.text = chatRoomItem.title
+
+            root.setOnClickListener { chatRoomClick(chatRoomItem) }
+
         }
 
     }

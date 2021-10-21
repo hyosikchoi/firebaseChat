@@ -65,9 +65,12 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         binding = FragmentChatBinding.bind(view)
         initView()
         context?.let {
-
+            chatListAdapter.setClickListener { chatRoomItem ->
+                startActivity(ChatRoomActivity.getIntent(it,chatRoomItem.key))
+            }
             binding.chatListRecyclerView.layoutManager = LinearLayoutManager(it)
             binding.chatListRecyclerView.adapter = chatListAdapter
+
         }
 
         auth.currentUser?.let { user ->

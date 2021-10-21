@@ -6,13 +6,29 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
+        android:id="@+id/roomNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="1."
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
         android:id="@+id/chatRoomTitleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/roomNumber"
+        app:layout_constraintTop_toTopOf="@id/roomNumber"
+        app:layout_constraintBottom_toBottomOf="@id/roomNumber"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         tools:text="안녕하세요"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
