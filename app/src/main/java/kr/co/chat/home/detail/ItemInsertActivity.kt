@@ -156,8 +156,7 @@ class ItemInsertActivity : AppCompatActivity() {
                 )
             }
             else {
-                // ToDo no Image 처리
-                toast("이미지를 등록하시고 다시 시도해주세요.")
+               toast("이미지를 등록하시고 다시 시도해주세요.")
             }
         }
 

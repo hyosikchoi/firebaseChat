@@ -20,7 +20,9 @@ import kr.co.chat.databinding.FragmentMypageBinding
 
 class MyPageFragment : Fragment(R.layout.fragment_mypage) {
 
-    private lateinit var binding : FragmentMypageBinding
+    private var _binding : FragmentMypageBinding ?= null
+
+    private val binding get() = _binding!!
 
     private val auth : FirebaseAuth by lazy {
         Firebase.auth
@@ -32,7 +34,7 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentMypageBinding.bind(view)
+        _binding = FragmentMypageBinding.bind(view)
 
         initLogin()
         initIdPwEditText()
@@ -43,6 +45,11 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
         }
 
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun successSignIn() {

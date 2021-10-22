@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/list_item_click_ripple"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_item_click_ripple">
 
     <TextView
         android:id="@+id/roomNumber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="1."
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
+        android:text="1."
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -27,13 +26,13 @@
         android:id="@+id/chatRoomTitleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/roomNumber"
-        app:layout_constraintTop_toTopOf="@id/roomNumber"
-        app:layout_constraintBottom_toBottomOf="@id/roomNumber"
-        android:textStyle="bold"
+        android:layout_marginStart="10dp"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:layout_marginStart="10dp"
-        tools:text="안녕하세요"/>
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/roomNumber"
+        app:layout_constraintStart_toEndOf="@+id/roomNumber"
+        app:layout_constraintTop_toTopOf="@id/roomNumber"
+        tools:text="안녕하세요" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

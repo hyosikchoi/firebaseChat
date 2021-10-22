@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 
 import androidx.core.content.edit
@@ -32,14 +33,20 @@ import kr.co.chat.home.adapter.ViewPagerAdapter
 import kr.co.chat.home.detail.ItemInsertActivity
 import kr.co.chat.home.entity.ChatRoomItem
 import kr.co.chat.home.entity.ItemEntity
+import ted.gun0912.clustering.naver.TedNaverClustering
+import ted.gun0912.clustering.naver.TedNaverMarker
 
 class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
-    private lateinit var binding : FragmentHomeBinding
+    private var _binding : FragmentHomeBinding ?= null
+
+    private val binding get() = _binding!!
 
     private lateinit var naverMap : NaverMap
 
     private lateinit var locationSource: FusedLocationSource
+
+    private lateinit var naverClustering: TedNaverClustering<ItemEntity>
 
     /** 카메라 위치 저장하기 위한 preference */
     private var sharedPreferences: SharedPreferences ?= null
@@ -55,6 +62,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     private val itemsDB: DatabaseReference by lazy {
         Firebase.database.reference.child(DBKey.ITEMS)
     }
+
+    private val itemList = mutableListOf<ItemEntity>()
 
     private val viewPagerAdapter = ViewPagerAdapter(
         /** viewPager item 클릭 시 채팅방 개설 */
@@ -81,27 +90,22 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     /** fragment 전환 시 생명주기 때문에 listener 를 최상단에 정의 */
     /** lifecycle 에 맞춰 add 했다가 remove 하기 위해서 */
+    // TODO 마커가 물품 등록 후 바로 업데이트 되게끔 수정
+    // TODO 가끔 마커가 중복으로 등록되는 경우 수정
     private val itemListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-
-            val itemList = mutableListOf<ItemEntity>()
+          //  clearMarker()
+            itemList.clear()
 
             snapshot.children.forEach { data ->
                 val itemEntity = data.getValue(ItemEntity::class.java)
                 itemEntity ?: return
                 itemList.add(itemEntity)
             }
-            /** 현재 데이터 목록에 추가된 데이터가 있으면  */
-            if(!viewPagerAdapter.currentList.containsAll(itemList)) {
-                /** list 삽입 */
-                viewPagerAdapter.submitList(itemList)
-                updateMarker(itemList = itemList)
-            }
-
-            else {
-                updateMarker(itemList = itemList)
-            }
-
+                viewPagerAdapter.submitList(itemList) {
+//                    context?.toast(viewPagerAdapter.currentList.size.toString())
+                    updateMarker(itemList = itemList)
+                }
         }
 
         override fun onCancelled(error: DatabaseError) {}
@@ -109,7 +113,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentHomeBinding.bind(view)
+        _binding = FragmentHomeBinding.bind(view)
 
         binding.mapView.onCreate(savedInstanceState)
 
@@ -137,7 +141,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
         naverMap = map
 
-        naverMap.minZoom = 12.00
+        naverMap.minZoom = 10.00
         naverMap.maxZoom = 18.00
 
         val uiSettings = naverMap.uiSettings
@@ -167,6 +171,23 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
             naverMap.moveCamera(cameraUpdate)
         }
 
+
+        naverClustering =  TedNaverClustering.with<ItemEntity>(requireActivity(), naverMap)
+            .customMarker {
+                    clusterItem ->
+                Marker().apply {
+                    icon = MarkerIcons.BLACK
+                    iconTintColor = Color.RED
+                    tag = clusterItem.id
+                }
+            }.markerClickListener { item ->
+                /** 해당 item 으로 viewPager 이동 */
+                val itemPosition = viewPagerAdapter.currentList.indexOf(item)
+                binding.itemViewPager.currentItem = itemPosition
+            }
+            .items(itemList)
+            .make()
+
         /** 지도 클릭 이벤트 관련 */
         mapOnClick()
 
@@ -191,28 +212,55 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     }
 
+    private fun clearMarker() {
+        naverClustering.clearItems()
+    }
+
     private fun updateMarker(itemList : MutableList<ItemEntity>)  = with(binding) {
 
-        itemList.forEach { item ->
-            val marker = Marker()
-            marker.position = LatLng(item.latitude , item.longitude)
-            marker.icon = MarkerIcons.BLACK
-            marker.iconTintColor = Color.RED
+//        itemList.forEach { item ->
+//            val marker = Marker()
+//            marker.position = LatLng(item.latitude , item.longitude)
+//            marker.icon = MarkerIcons.BLACK
+//            marker.iconTintColor = Color.RED
+//
+//            /** 마커 식별 태그 지정 */
+//            marker.tag = item.id
+//
+//            /** 마커 클릭 시 */
+//            marker.setOnClickListener(object : Overlay.OnClickListener {
+//                override fun onClick(overlay: Overlay): Boolean {
+//                    /** 해당 item 으로 viewPager 이동 */
+//                    val itemPosition = viewPagerAdapter.currentList.indexOf(item)
+//                    itemViewPager.currentItem = itemPosition
+//                    return true
+//                }
+//            })
+//
+//            if(this@HomeFragment::naverMap.isInitialized) marker.map = naverMap
+//        }
 
-            /** 마커 식별 태그 지정 */
-            marker.tag = item.id
+        if(this@HomeFragment::naverMap.isInitialized) {
 
-            /** 마커 클릭 시 */
-            marker.setOnClickListener(object : Overlay.OnClickListener {
-                override fun onClick(overlay: Overlay): Boolean {
-                    /** 해당 item 으로 viewPager 이동 */
-                    val itemPosition = viewPagerAdapter.currentList.indexOf(item)
-                    itemViewPager.currentItem = itemPosition
-                    return true
-                }
-            })
+            context?.let {
 
-            if(this@HomeFragment::naverMap.isInitialized) marker.map = naverMap
+                TedNaverClustering.with<ItemEntity>(it, naverMap)
+                    .customMarker {
+                            clusterItem ->
+                        Marker().apply {
+                            icon = MarkerIcons.BLACK
+                            iconTintColor = Color.RED
+                            tag = clusterItem.id
+                        }
+                    }.markerClickListener { item ->
+                        /** 해당 item 으로 viewPager 이동 */
+                        val itemPosition = viewPagerAdapter.currentList.indexOf(item)
+                        itemViewPager.currentItem = itemPosition
+                    }
+                    .items(itemList)
+                    .make()
+
+            }
         }
 
     }
@@ -328,8 +376,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.mapView.onDestroy()
-
         itemsDB.removeEventListener(itemListener)
+        _binding = null
     }
 
     companion object {
