@@ -15,12 +15,15 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kr.co.chat.DBKey.Companion.USERS
 import kr.co.chat.R
+import kr.co.chat.databinding.FragmentChatBinding
 
 import kr.co.chat.databinding.FragmentMypageBinding
 
 class MyPageFragment : Fragment(R.layout.fragment_mypage) {
 
-    private lateinit var binding : FragmentMypageBinding
+    private var _binding : FragmentMypageBinding ?= null
+
+    private val binding get() = _binding ?: error("View Binding null")
 
     private val auth : FirebaseAuth by lazy {
         Firebase.auth
@@ -32,7 +35,7 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentMypageBinding.bind(view)
+        _binding = FragmentMypageBinding.bind(view)
 
         initLogin()
         initIdPwEditText()
@@ -43,6 +46,11 @@ class MyPageFragment : Fragment(R.layout.fragment_mypage) {
         }
 
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun successSignIn() {

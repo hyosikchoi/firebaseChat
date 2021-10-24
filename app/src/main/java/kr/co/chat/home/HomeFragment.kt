@@ -35,11 +35,15 @@ import kr.co.chat.home.entity.ItemEntity
 
 class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
-    private lateinit var binding : FragmentHomeBinding
+    private var _binding : FragmentHomeBinding ?= null
+
+    private val binding get() = _binding ?: error("View Binding null")
 
     private lateinit var naverMap : NaverMap
 
     private lateinit var locationSource: FusedLocationSource
+
+    private val itemList = mutableListOf<ItemEntity>()
 
     /** 카메라 위치 저장하기 위한 preference */
     private var sharedPreferences: SharedPreferences ?= null
@@ -84,7 +88,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     private val itemListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
 
-            val itemList = mutableListOf<ItemEntity>()
+            itemList.clear()
 
             snapshot.children.forEach { data ->
                 val itemEntity = data.getValue(ItemEntity::class.java)
@@ -92,16 +96,14 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
                 itemList.add(itemEntity)
             }
             /** 현재 데이터 목록에 추가된 데이터가 있으면  */
-            if(!viewPagerAdapter.currentList.containsAll(itemList)) {
+
                 /** list 삽입 */
-                viewPagerAdapter.submitList(itemList)
-                updateMarker(itemList = itemList)
-            }
-
-            else {
-                updateMarker(itemList = itemList)
-            }
-
+                viewPagerAdapter.submitList(itemList) {
+                    _binding ?: return@submitList
+                    /** submitList 후에 notify 를 해줘야 데이터가 갱신 된다. */
+                    viewPagerAdapter.notifyDataSetChanged()
+                    updateMarker(itemList = itemList)
+                }
         }
 
         override fun onCancelled(error: DatabaseError) {}
@@ -109,7 +111,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentHomeBinding.bind(view)
+        _binding = FragmentHomeBinding.bind(view)
 
         binding.mapView.onCreate(savedInstanceState)
 
@@ -286,9 +288,9 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
-
         /** 상품 목록 불러오기 */
         itemsDB.addListenerForSingleValueEvent(itemListener)
+        viewPagerAdapter.notifyDataSetChanged()
     }
 
     override fun onStop() {
@@ -328,8 +330,8 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.mapView.onDestroy()
-
         itemsDB.removeEventListener(itemListener)
+        _binding = null
     }
 
     companion object {

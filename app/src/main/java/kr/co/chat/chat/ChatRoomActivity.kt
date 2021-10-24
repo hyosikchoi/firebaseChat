@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kr.co.chat.BaseActivity
 import kr.co.chat.DBKey
 import kr.co.chat.R
 import kr.co.chat.chat.adapter.ChatRoomChatsAdapter
@@ -21,28 +22,20 @@ import kr.co.chat.databinding.ActivityChatRoomBinding
 import kr.co.chat.extension.toast
 import kr.co.chat.home.entity.ChatItem
 
-class ChatRoomActivity : AppCompatActivity(R.layout.activity_chat_room) {
+class ChatRoomActivity : BaseActivity<ActivityChatRoomBinding>({layoutInflater -> ActivityChatRoomBinding.inflate(layoutInflater)}) {
 
-    private lateinit var binding : ActivityChatRoomBinding
-
-    private val auth : FirebaseAuth by lazy {
-        Firebase.auth
-    }
     private lateinit var chatsDB : DatabaseReference
 
     /** 채팅방 seq번호 */
     private val chatRoomKey : String by lazy {
         intent.getStringExtra(ROOM_KEY).toString()
     }
-
     private val chatRoomChatsAdapter = ChatRoomChatsAdapter()
 
     private val chatList = mutableListOf<ChatItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityChatRoomBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         chatsDB = Firebase.database.reference.child(DBKey.CHATS).child(chatRoomKey)
 

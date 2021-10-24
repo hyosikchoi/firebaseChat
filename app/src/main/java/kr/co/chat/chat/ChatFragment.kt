@@ -19,11 +19,14 @@ import kr.co.chat.DBKey
 import kr.co.chat.R
 import kr.co.chat.chat.adapter.ChatListAdapter
 import kr.co.chat.databinding.FragmentChatBinding
+import kr.co.chat.databinding.FragmentHomeBinding
 import kr.co.chat.home.entity.ChatRoomItem
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
 
-    private lateinit var binding: FragmentChatBinding
+    private var _binding : FragmentChatBinding?= null
+
+    private val binding get() = _binding ?: error("View Binding null")
 
     private val auth: FirebaseAuth by lazy {
         Firebase.auth
@@ -52,6 +55,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             }
             /** 완료가 되면 callback 을 받아 다시 initView 처리 */
             chatListAdapter.submitList(chatRoomList) {
+                _binding ?: return@submitList
                 initView()
             }
 
@@ -62,7 +66,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentChatBinding.bind(view)
+        _binding = FragmentChatBinding.bind(view)
         initView()
         context?.let {
             /** 채팅방 목록 item 클릭 시 채팅창 activity 로 이동 */
@@ -126,6 +130,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             chatDB.removeEventListener(listListener)
 
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

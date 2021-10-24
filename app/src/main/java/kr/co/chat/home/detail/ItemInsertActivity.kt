@@ -20,6 +20,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import kr.co.chat.BaseActivity
 import kr.co.chat.DBKey
 import kr.co.chat.DBKey.Companion.ITEMS
 import kr.co.chat.R
@@ -27,17 +28,7 @@ import kr.co.chat.databinding.ActivityItemInsertBinding
 import kr.co.chat.extension.toast
 import kr.co.chat.home.entity.ItemEntity
 
-class ItemInsertActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityItemInsertBinding
-
-    private val auth: FirebaseAuth by lazy {
-        Firebase.auth
-    }
-
-    private val storage: FirebaseStorage by lazy {
-        Firebase.storage
-    }
+class ItemInsertActivity : BaseActivity<ActivityItemInsertBinding>({layoutInflater -> ActivityItemInsertBinding.inflate(layoutInflater)}) {
 
     private val itemsDB: DatabaseReference by lazy {
         Firebase.database.reference.child(ITEMS)
@@ -53,8 +44,6 @@ class ItemInsertActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityItemInsertBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         initViews()
 
         resultLauncher = with(binding) {

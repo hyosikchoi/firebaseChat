@@ -12,9 +12,7 @@ import kr.co.chat.databinding.ActivityMainBinding
 import kr.co.chat.home.HomeFragment
 import kr.co.chat.mypage.MyPageFragment
 
-class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
+class MainActivity : BaseActivity<ActivityMainBinding>({layoutInflater -> ActivityMainBinding.inflate(layoutInflater)}) {
 
     /** 뒤로가기 버튼 두번 시간 재기 위한 변수 */
     private var backKeyPressedTime : Long = 0L
@@ -28,8 +26,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         initBottomNav()
     }
 
