@@ -33,6 +33,7 @@ import kr.co.chat.home.detail.ItemInsertActivity
 import kr.co.chat.home.entity.ChatRoomItem
 import kr.co.chat.home.entity.ItemEntity
 
+@Suppress("UNCHECKED_CAST")
 class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     private var _binding : FragmentHomeBinding ?= null
@@ -42,8 +43,6 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     private lateinit var naverMap : NaverMap
 
     private lateinit var locationSource: FusedLocationSource
-
-    private val itemList = mutableListOf<ItemEntity>()
 
     /** 카메라 위치 저장하기 위한 preference */
     private var sharedPreferences: SharedPreferences ?= null
@@ -87,23 +86,15 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
     /** lifecycle 에 맞춰 add 했다가 remove 하기 위해서 */
     private val itemListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
+        val itemList = snapshot.children.map {dataSnapshot ->
+                dataSnapshot.getValue(ItemEntity::class.java)
+           }
 
-            itemList.clear()
-
-            snapshot.children.forEach { data ->
-                val itemEntity = data.getValue(ItemEntity::class.java)
-                itemEntity ?: return
-                itemList.add(itemEntity)
-            }
             /** 현재 데이터 목록에 추가된 데이터가 있으면  */
+            /** list 삽입 */
+            viewPagerAdapter.submitList(itemList)
+            updateMarker(itemList = itemList.toMutableList() as MutableList<ItemEntity>)
 
-                /** list 삽입 */
-                viewPagerAdapter.submitList(itemList) {
-                    _binding ?: return@submitList
-                    /** submitList 후에 notify 를 해줘야 데이터가 갱신 된다. */
-                    viewPagerAdapter.notifyDataSetChanged()
-                    updateMarker(itemList = itemList)
-                }
         }
 
         override fun onCancelled(error: DatabaseError) {}
@@ -193,7 +184,7 @@ class HomeFragment : Fragment(R.layout.fragment_home)  , OnMapReadyCallback {
 
     }
 
-    private fun updateMarker(itemList : MutableList<ItemEntity>)  = with(binding) {
+    private fun updateMarker(itemList: MutableList<ItemEntity>)  = with(binding) {
 
         itemList.forEach { item ->
             val marker = Marker()
