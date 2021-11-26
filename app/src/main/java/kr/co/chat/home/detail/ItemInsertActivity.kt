@@ -59,18 +59,10 @@ class ItemInsertActivity : BaseActivity<ActivityItemInsertBinding>({layoutInflat
                             itemImageView.setImageURI(uri)
                             selectedUri = uri
                         } else {
-                            Toast.makeText(
-                                this@ItemInsertActivity,
-                                "사진을 가져오지 못했습니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            toast("사진을 가져오지 못했습니다.")
                         }
                     } else {
-                        Toast.makeText(
-                            this@ItemInsertActivity,
-                            "사진을 가져오지 못했습니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        toast("사진을 가져오지 못했습니다.")
                     }
                 }
             )
